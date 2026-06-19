@@ -604,12 +604,8 @@ body {
 </style>
 </head>
 <body>
-
-<!-- Loading Screen -->
-<div class="loading-screen" id="loadingScreen">
-  <div class="loader"></div>
-  <p>正在加载意大利语B2冲刺资料...</p>
-</div>
+<!-- Loading Screen - 立即隐藏，不影响内容 -->
+<div class="loading-screen" id="loadingScreen" style="display:none !important;"></div>
 
 <!-- Italian Flag Bar -->
 <div class="flag-bar">
@@ -1527,13 +1523,11 @@ function toggleSection(header) {
 // 全局错误捕获，避免白屏
 window.addEventListener('error', function(e) {
   console.error('页面错误:', e.message);
-  document.getElementById('loadingScreen').innerHTML = '<p style="color:#CE2B37;">⚠️ 页面加载遇到问题，请刷新重试</p><p style="font-size:0.8rem;color:#888;">' + e.message + '</p>';
-  document.getElementById('loadingScreen').classList.remove('hidden');
 });
 
 document.addEventListener('DOMContentLoaded', function() {
   try {
-    // 后台静默预加载音频（不阻塞页面）
+    // 后台静默加载音频映射并预加载（不阻塞页面）
     (async function() {
       try {
         const [wResp, pResp] = await Promise.all([
@@ -1544,25 +1538,20 @@ document.addEventListener('DOMContentLoaded', function() {
         var pj = await pResp.json();
         _am.p = pj.paragraphs || pj;
         
-        // 收集路径
+        // 收集路径并后台挨个预加载
         var allPaths = [];
         for (var k in _am.w) allPaths.push(_am.w[k]);
         for (var k in _am.p) allPaths.push(_am.p[k]);
         
-        // 隐藏loading，先展示内容
-        document.getElementById('loadingScreen').classList.add('hidden');
-        
-        // 后台挨个预加载（无UI提示）
         for (var i = 0; i < allPaths.length; i++) {
           try {
             var r = await fetch(allPaths[i]);
             var d = await r.json();
             if (d && d.b64) { _ac[allPaths[i]] = d.b64; }
-          } catch(e) {/* 静默失败 */}
+          } catch(e) {}
         }
       } catch(e) {
-        document.getElementById('loadingScreen').classList.add('hidden');
-        console.warn('音频加载失败，请用服务器打开:', e.message);
+        console.warn('音频映射加载失败:', e.message);
       }
     })();
   const tabs = document.querySelectorAll('.tab-btn');
@@ -1591,7 +1580,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   } catch(e) {
     console.error('初始化错误:', e);
-    document.getElementById('loadingScreen').innerHTML = '<p style="color:#CE2B37;">⚠️ 页面初始化失败</p><p style="font-size:0.8rem;color:#888;">' + e.message + '</p>';
   }
 });
 </script>
