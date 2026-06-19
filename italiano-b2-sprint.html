@@ -773,14 +773,15 @@ function pb(k,b){
   _doPlay(k,b,s);
 }
 async function _doPlay(k,b,s){
-  var d=_ac[k]||null;
+  // 先尝试用key查缓存，再用path查
+  var f=_am.p[k]||_am.w[k];
+  if(!f){btnReset(b);_cb=null;return}
+  var d=_ac[f]||null;
   if(!d){
-    var f=_am.p[k]||_am.w[k];
-    if(!f){btnReset(b);_cb=null;return}
     try{
       var r=await fetch(f);
       if(!r.ok)throw Error('HTTP '+r.status);
-      d=(await r.json()).b64;_ac[k]=d;
+      d=(await r.json()).b64;_ac[f]=d;
     }catch(e){btnReset(b);_cb=null;console.warn('音频加载失败:',k,e.message);return}
   }
   if(s!==_ps){return}
@@ -1532,9 +1533,10 @@ window.addEventListener('error', function(e) {
 
 document.addEventListener('DOMContentLoaded', function() {
   try {
-    // 加载音频映射文件（独立base64 JSON）
+    // 加载音频映射 + 逐条预加载音频
     (async function() {
       try {
+        document.querySelector('#loadingScreen p').textContent = '正在加载音频映射...';
         const [wResp, pResp] = await Promise.all([
           fetch('audio/w_map.json'),
           fetch('audio/p_map.json')
@@ -1542,10 +1544,48 @@ document.addEventListener('DOMContentLoaded', function() {
         _am.w = await wResp.json();
         var pj = await pResp.json();
         _am.p = pj.paragraphs || pj;
-        document.getElementById('loadingScreen').querySelector('p').textContent = '音频映射加载完成，点击播放即可收听';
+        
+        // 收集所有音频路径
+        var allPaths = [];
+        for (var k in _am.w) allPaths.push(_am.w[k]);
+        for (var k in _am.p) allPaths.push(_am.p[k]);
+        var total = allPaths.length;
+        
+        var ls = document.querySelector('#loadingScreen p');
+        var prog = document.querySelector('#loadingScreen .progress');
+        if (!prog) {
+          prog = document.createElement('div');
+          prog.className = 'progress';
+          prog.style.cssText = 'width:80%;max-width:400px;height:6px;background:#E8E4DC;border-radius:3px;margin-top:12px;overflow:hidden';
+          var bar = document.createElement('div');
+          bar.id = 'pbar';
+          bar.style.cssText = 'height:100%;width:0%;background:linear-gradient(90deg,#009246,#C4A35A);border-radius:3px;transition:width 0.3s';
+          prog.appendChild(bar);
+          ls.parentNode.insertBefore(prog, ls.nextSibling);
+        }
+        var bar = document.getElementById('pbar');
+        
+        // 挨个预加载（串行，避免并发请求过多）
+        for (var i = 0; i < total; i++) {
+          var path = allPaths[i];
+          try {
+            var r = await fetch(path);
+            var d = await r.json();
+            if (d && d.b64) { _ac[path] = d.b64; }
+          } catch(e) {/* 单个失败不影响整体 */}
+          var pct = Math.round((i + 1) / total * 100);
+          bar.style.width = pct + '%';
+          ls.textContent = '正在预加载音频 ' + (i + 1) + '/' + total + ' (' + pct + '%)';
+        }
+        
+        ls.textContent = '✓ ' + total + ' 个音频已加载完毕';
+        // 预加载完成后隐藏loading
+        setTimeout(function(){
+          document.getElementById('loadingScreen').classList.add('hidden');
+        }, 500);
       } catch(e) {
-        document.getElementById('loadingScreen').querySelector('p').textContent = '⚠️ 请用本地服务器打开此页面才能播放音频（见说明）';
-        console.warn('Audio maps load failed:', e.message);
+        document.querySelector('#loadingScreen p').textContent = '⚠️ 请用本地服务器打开此页面才能播放音频';
+        console.warn('Audio load failed:', e.message);
       }
     })();
   const tabs = document.querySelectorAll('.tab-btn');
@@ -1567,9 +1607,6 @@ document.addEventListener('DOMContentLoaded', function() {
   renderStoria();
   renderPersonaggi();
   renderDati();
-
-  // Hide loading
-  document.getElementById('loadingScreen').classList.add('hidden');
 
   // Scroll to top button
   window.addEventListener('scroll', function() {
