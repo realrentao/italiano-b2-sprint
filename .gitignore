@@ -1,0 +1,14 @@
+# 音频源文件（已内联到 audio_data.js）
+audio/
+*.mp3
+
+# 生成脚本（一次性使用）
+generate_audio.py
+fix_*.py
+inline_audio.py
+
+# 临时文件
+_tmp_*
+__pycache__/
+*.pyc
+.workbuddy/

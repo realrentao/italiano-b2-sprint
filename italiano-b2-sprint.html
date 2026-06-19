@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>意大利语B2冲刺 · 交互学习工具</title>
+<script src="audio_data.js"></script>
+<script src="audio_data.js"></script>
+<!-- Google Fonts (如在境内无法加载则降级到系统字体) -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet" onerror="this.remove()">
+<style>
+/* ===== CSS Variables / Theme ===== */
+:root {
+  --ita-green: #009246;
+  --ita-white: #F1F2F1;
+  --ita-red: #CE2B37;
+  --gold: #C4A35A;
+  --gold-light: #E8D5A3;
+  --bg-body: #FAF8F3;
+  --bg-card: #FFFFFF;
+  --bg-card-alt: #F7F5EF;
+  --text-primary: #1A1A2E;
+  --text-secondary: #5A5A6E;
+  --text-muted: #8A8A9E;
+  --border-light: #E8E4DC;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --font-serif: 'Playfair Display', serif;
+  --font-text: 'Times New Roman', 'Noto Serif SC', serif;
+  --font-ui: 'Inter', sans-serif;
+  --font-cn: 'Noto Serif SC', serif;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ===== Italian Flag Header ===== */
+.flag-bar {
+  height: 6px;
+  display: flex;
+  position: fixed;
+  top: 0; left: 0; right: 0; z-index: 1000;
+}
+.flag-bar span {
+  flex: 1;
+}
+.flag-bar .green { background: var(--ita-green); }
+.flag-bar .white { background: #FFFFFF; }
+.flag-bar .red { background: var(--ita-red); }
+
+/* ===== Top Header ===== */
+.top-header {
+  margin-top: 6px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 40px 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.top-header::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(0,146,70,0.08) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(206,43,55,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+.top-header h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 2px;
+  position: relative;
+}
+.top-header .subtitle {
+  font-family: var(--font-ui);
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  color: var(--gold-light);
+  margin-top: 8px;
+  letter-spacing: 4px;
+  font-weight: 300;
+}
+.top-header .badge-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.top-header .badge {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--gold-light);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* ===== Container ===== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===== Tab Navigation ===== */
+.tab-nav-wrap {
+  position: sticky;
+  top: 6px;
+  z-index: 100;
+  background: var(--bg-body);
+  padding: 12px 0 0;
+}
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 8px;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--ita-green); background: rgba(0,146,70,0.05); }
+.tab-btn.active {
+  color: var(--ita-green);
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 20%; right: 20%;
+  height: 3px;
+  background: var(--ita-green);
+  border-radius: 2px 2px 0 0;
+}
+.tab-btn .tab-icon { margin-right: 6px; }
+
+/* ===== Stats Bar ===== */
+.stats-bar {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  flex-wrap: wrap;
+}
+.stat-card {
+  flex: 1;
+  min-width: 100px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+.stat-card .num {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ita-green);
+}
+.stat-card .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== Content Sections ===== */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== Section Cards ===== */
+.section-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.section-card:hover { box-shadow: var(--shadow-md); }
+.section-card-header {
+  padding: 16px 24px;
+  background: var(--bg-card-alt);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+}
+.section-card-header:hover { background: #EFEDE6; }
+.section-card-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+.section-card-header .toggle-icon {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.section-card-header.open .toggle-icon { transform: rotate(180deg); }
+.section-card-body {
+  padding: 0 24px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+}
+.section-card-body.open {
+  max-height: 20000px;
+  padding: 20px 24px;
+}
+
+/* ===== Dialog / Paragraph Wrap ===== */
+.dialog-item {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-light);
+}
+.dialog-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.dialog-speaker {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ita-red);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.dialog-text {
+  font-family: var(--font-text);
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+/* ===== Audio Controls ===== */
+.audio-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.play-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--ita-green);
+  background: #fff;
+  color: var(--ita-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+}
+.play-btn:hover { background: var(--ita-green); color: #fff; }
+.play-btn.playing { background: var(--ita-red) !important; border-color: var(--ita-red) !important; color: #fff !important; animation: pulse 1s infinite; box-shadow: 0 0 0 3px rgba(206,43,55,0.3); }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+
+.speed-btn-group {
+  display: flex;
+  gap: 2px;
+}
+.speed-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--border-light);
+  background: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-ui);
+}
+.speed-btn:first-child { border-radius: 6px 0 0 6px; }
+.speed-btn:last-child { border-radius: 0 6px 6px 0; }
+.speed-btn.active { background: var(--ita-green); color: #fff; border-color: var(--ita-green); }
+.speed-btn:hover:not(.active) { background: #f0f0f0; }
+
+.action-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border-light);
+  background: #fff;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-ui);
+}
+.action-btn:hover { border-color: var(--gold); color: var(--gold); }
+.action-btn.active-btn { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+/* ===== Translation Box ===== */
+.trans-box {
+  margin-top: 8px;
+  padding: 12px 16px;
+  background: #FDF8EE;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  font-family: var(--font-cn);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  display: none;
+}
+.trans-box.show { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== Vocabulary Table ===== */
+.vocab-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+.vocab-table th {
+  background: var(--bg-card-alt);
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--border-light);
+}
+.vocab-table td {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-light);
+  font-family: var(--font-text);
+}
+.vocab-table tr:hover td { background: #FAF8F3; }
+.vocab-table .italian-word {
+  font-weight: 600;
+  color: var(--ita-green);
+  cursor: pointer;
+}
+.vocab-table .italian-word:hover { color: var(--ita-red); }
+
+/* ===== Grammar Notes ===== */
+.grammar-note {
+  background: #F0F7FF;
+  border-left: 3px solid #3B82F6;
+  padding: 12px 16px;
+  margin: 10px 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.grammar-note .label {
+  font-weight: 600;
+  color: #2563EB;
+  margin-bottom: 4px;
+}
+
+/* ===== Proverbs ===== */
+.proverb-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card-alt);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+.proverb-card .it {
+  font-family: var(--font-text);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-primary);
+}
+.proverb-card .cn {
+  font-family: var(--font-cn);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.proverb-card .num {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 28px;
+}
+
+/* ===== Exercises ===== */
+.exercise-item {
+  padding: 14px 16px;
+  background: var(--bg-card-alt);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+.exercise-item .q {
+  font-family: var(--font-text);
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+.exercise-item .ans-box {
+  display: none;
+  padding: 10px 14px;
+  background: #E8F5E9;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-family: var(--font-text);
+  color: #2E7D32;
+}
+.exercise-item .ans-box.show { display: block; }
+
+/* ===== Data / Stats ===== */
+.data-chart {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+.data-bar {
+  padding: 10px 14px;
+  background: var(--bg-card-alt);
+  border-radius: var(--radius-sm);
+}
+.data-bar .label-sm { font-size: 0.78rem; color: var(--text-muted); }
+.data-bar .value { font-size: 1.1rem; font-weight: 700; color: var(--ita-green); }
+.data-bar .pct-bar {
+  height: 6px;
+  background: var(--border-light);
+  border-radius: 3px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.data-bar .pct-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ita-green), var(--gold));
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+/* ===== Util Expressions ===== */
+.exp-group {
+  margin-bottom: 16px;
+}
+.exp-group h4 {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ita-red);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--gold-light);
+}
+.exp-item {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 3px;
+  background: var(--bg-card-alt);
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-family: var(--font-text);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.exp-item:hover { background: var(--gold-light); }
+
+/* ===== Full Text Toggle ===== */
+.orig-hidden .dialog-text,
+.orig-hidden .p-text {
+  opacity: 0.3;
+  filter: blur(4px);
+  transition: all 0.3s ease;
+}
+.orig-hidden .dialog-text:hover,
+.orig-hidden .p-text:hover {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ===== Per-line Text Toggle ===== */
+.dialog-line-wrap.line-orig-hidden .dialog-text {
+  opacity: 0.3;
+  filter: blur(4px);
+  transition: all 0.3s ease;
+}
+.dialog-line-wrap.line-orig-hidden .dialog-text:hover {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ===== Footer ===== */
+.page-footer {
+  margin-top: 40px;
+  padding: 24px;
+  text-align: center;
+  border-top: 1px solid var(--border-light);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .top-header { padding: 28px 16px 24px; }
+  .container { padding: 0 12px; }
+  .section-card-header { padding: 12px 16px; }
+  .section-card-header h3 { font-size: 0.95rem; }
+  .section-card-body { padding: 0 16px; }
+  .section-card-body.open { padding: 16px; }
+  .tab-btn { padding: 8px 14px; font-size: 0.75rem; }
+  .dialog-text { font-size: 0.9rem; }
+  .audio-bar { gap: 4px; }
+  .speed-btn { padding: 3px 8px; font-size: 0.68rem; }
+  .stat-card .num { font-size: 1.2rem; }
+  .data-chart { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .top-header h1 { font-size: 1.4rem; }
+  .tab-btn { padding: 6px 10px; font-size: 0.7rem; }
+  .action-btn { font-size: 0.65rem; padding: 3px 8px; }
+}
+
+/* ===== Scroll to Top ===== */
+.scroll-top {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--ita-green);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow-md);
+  display: none;
+  transition: var(--transition);
+  z-index: 200;
+}
+.scroll-top.show { display: flex; align-items: center; justify-content: center; }
+.scroll-top:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+/* ===== Loading overlay ===== */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+.loading-screen.hidden { opacity: 0; pointer-events: none; }
+.loading-screen .loader {
+  width: 48px; height: 48px;
+  border: 4px solid var(--border-light);
+  border-top-color: var(--ita-green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-screen p {
+  margin-top: 16px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-family: var(--font-ui);
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loader"></div>
+  <p>正在加载意大利语B2冲刺资料...</p>
+</div>
+
+<!-- Italian Flag Bar -->
+<div class="flag-bar">
+  <span class="green"></span>
+  <span class="white"></span>
+  <span class="red"></span>
+</div>
+
+<!-- Header -->
+<header class="top-header">
+  <h1 style="display:flex;align-items:center;justify-content:center;gap:12px;">
+    <svg width="36" height="24" viewBox="0 0 36 24" style="vertical-align:middle;">
+      <rect x="0" y="0" width="12" height="24" fill="#009246"/>
+      <rect x="12" y="0" width="12" height="24" fill="#FFFFFF"/>
+      <rect x="24" y="0" width="12" height="24" fill="#CE2B37"/>
+    </svg>
+    意大利语B2冲刺
+  </h1>
+  <p class="subtitle">ITALIANO · LIVELLO B2 · PREPARAZIONE COMPLETA</p>
+  <div class="badge-row">
+    <span class="badge">🗣️ 9 对话</span>
+    <span class="badge">💬 50+ 常用语</span>
+    <span class="badge">🏛️ 5 文化专题</span>
+    <span class="badge">📜 4 历史社会</span>
+    <span class="badge">🧑‍🔬 人物科学</span>
+    <span class="badge">✏️ 配套练习</span>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card"><div class="num">9</div><div class="label">对话 Dialoghi</div></div>
+    <div class="stat-card"><div class="num">6</div><div class="label">文化文章 Cultura</div></div>
+    <div class="stat-card"><div class="num">6</div><div class="label">练习 Esercizi</div></div>
+    <div class="stat-card"><div class="num">8</div><div class="label">分类 Tab</div></div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav-wrap">
+    <nav class="tab-nav" id="tabNav">
+      <button class="tab-btn active" data-tab="dialoghi"><span class="tab-icon">🗣️</span>对话</button>
+      <button class="tab-btn" data-tab="espressioni"><span class="tab-icon">💬</span>常用语</button>
+      <button class="tab-btn" data-tab="proverbi"><span class="tab-icon">📖</span>谚语</button>
+      <button class="tab-btn" data-tab="esercizi"><span class="tab-icon">✏️</span>练习</button>
+      <button class="tab-btn" data-tab="cultura"><span class="tab-icon">🏛️</span>文化</button>
+      <button class="tab-btn" data-tab="storia"><span class="tab-icon">📜</span>历史</button>
+      <button class="tab-btn" data-tab="personaggi"><span class="tab-icon">🧑‍🔬</span>人物</button>
+      <button class="tab-btn" data-tab="dati"><span class="tab-icon">📊</span>数据</button>
+    </nav>
+  </div>
+
+  <!-- ===== TAB: Dialoghi ===== -->
+  <div class="tab-content active" id="tab-dialoghi">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>🗣️ 日常对话 · Dialoghi quotidiani</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="dialoghiBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Espressioni ===== -->
+  <div class="tab-content" id="tab-espressioni">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>💬 常用语 · Espressioni utili</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="espressioniBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Proverbi ===== -->
+  <div class="tab-content" id="tab-proverbi">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>📖 意大利谚语 · Proverbi italiani</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="proverbiBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Esercizi ===== -->
+  <div class="tab-content" id="tab-esercizi">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>✏️ 练习题 · Esercizi</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="eserciziBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Cultura ===== -->
+  <div class="tab-content" id="tab-cultura">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>🏛️ 文化介绍 · Cultura</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="culturaBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Storia ===== -->
+  <div class="tab-content" id="tab-storia">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>📜 历史与社会 · Storia e Società</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="storiaBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Personaggi ===== -->
+  <div class="tab-content" id="tab-personaggi">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>🧑‍🔬 人物与科学 · Personaggi e Scienza</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="personaggiBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Dati ===== -->
+  <div class="tab-content" id="tab-dati">
+    <div class="section-card">
+      <div class="section-card-header open" onclick="toggleSection(this)">
+        <h3>📊 数据资料 · Dati statistici</h3>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="section-card-body open" id="datiBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Footer -->
+<footer class="page-footer">
+  意大利语B2冲刺 · 交互学习工具 &mdash; 源自课堂资料整理
+</footer>
+
+<script>
+// ====== INLINE AUDIO (311 files) ======
+
+let _ca=null,_cb=null,_ps=0,_sp=1.0;
+function ss(b,s){_sp=s;if(_ca){_ca.playbackRate=s;}var g=b.closest('.speed-btn-group');if(g)g.querySelectorAll('.speed-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');}
+function btnReset(b){if(b){b.classList.remove('playing');b.textContent='▶';}}
+function sa(){_ps++;if(_ca){var ob=_ca._btn;btnReset(ob);_ca.pause();_ca=null}if(_cb){_cb=null}}
+function pb(k,b){
+  if(b&&b===_cb){sa();return;}
+  sa();var s=++_ps,d=AI[k];if(!d)return;
+  if(b){b.classList.add('playing');b.textContent='⏹';_cb=b}
+  try{
+    var a=atob(d),u=new Uint8Array(a.length);
+    for(var i=0;i<a.length;i++)u[i]=a.charCodeAt(i);
+    var l=URL.createObjectURL(new Blob([u],{type:'audio/mpeg'})),x=new Audio(l);
+    x._btn=b;x.playbackRate=_sp;
+    x.onended=function(){URL.revokeObjectURL(l);btnReset(this._btn);if(this._btn&&this._btn===_cb){_cb=null}};
+    x.onerror=function(){URL.revokeObjectURL(l);btnReset(this._btn);if(this._btn&&this._btn===_cb){_cb=null}};
+    if(s===_ps){_ca=x;x.play().catch(function(){btnReset(b);_cb=null})};
+  }catch(e){btnReset(b);_cb=null}
+}
+function pl(i,b){var d=i.split('-').map(Number);pb('dialogo_'+(d[0]+1)+'_l'+d[1],b);}
+function pad(i,b){pb('dialogo_'+(i+1)+'_full',b);}
+function pab(k,b){pb(k,b);}
+function p1x(k,b){var os=_sp;_sp=1.0;pb(k,b);_sp=os;}
+// ====== DATA ======
+const DATA = {
+  // Dialoghi data
+  dialoghi: [
+    {
+      title: "1. Sei pronto per l'esame?",
+      lines: [
+        { speaker: "Lorenzo", text: "Pronto? Oh, ciao Gianna.", trans: "喂？哦，你好Gianna。" },
+        { speaker: "Gianna", text: "Ciao Lorenzo! Come va con lo studio? Sei pronto per l'esame di letteratura?", trans: "你好Lorenzo！学习怎么样了？你准备好文学考试了吗？" },
+        { speaker: "Lorenzo", text: "Beh, quasi..., ma entro venerdì dovrei esserlo.", trans: "嗯，差不多了……但到周五之前应该能准备好。" },
+        { speaker: "Gianna", text: "Non credevo che avresti studiato così tanto, sai.", trans: "真没想到你会学这么多，你知道吗。" },
+        { speaker: "Lorenzo", text: "Te l'ho detto, questa volta faccio sul serio, quest'esame lo devo superare.", trans: "我跟你说过了，这次我是认真的，这次考试我必须过。" },
+        { speaker: "Gianna", text: "Bravo Lorenzo!", trans: "好样的Lorenzo！" },
+        { speaker: "Lorenzo", text: "Ma sì! Pensa che ieri sera sono uscito e sono tornato presto, prima delle 2...", trans: "可不是嘛！想想昨晚我出去了，但两点前就回来了……" },
+        { speaker: "Gianna", text: "Ah, ecco, sei proprio deciso!", trans: "啊，看来你真是下定决心了！" },
+        { speaker: "Lorenzo", text: "Comunque, non è facile, eh, sono 400 pagine!", trans: "不过，可不容易啊，整整400页！" },
+        { speaker: "Gianna", text: "Caspita! Ma tu hai frequentato?", trans: "天哪！但你上课去了吗？" },
+        { speaker: "Lorenzo", text: "Mah, veramente non tanto. Per fortuna ho appena trovato gli appunti giusti, me li darà Federico domani.", trans: "呃，其实没怎么去。好在刚找到了合适的笔记，Federico明天会给我。" },
+        { speaker: "Gianna", text: "Federico chi? Quello che dicevi che non studia, che è peggio di te?", trans: "哪个Federico？就是你之前说比你还不用功的那个？" },
+        { speaker: "Lorenzo", text: "Sì, esatto.", trans: "对，就是他。" },
+        { speaker: "Gianna", text: "E hai chiesto gli appunti proprio a lui?", trans: "你居然找他借笔记？" },
+        { speaker: "Lorenzo", text: "Sì, perché gli appunti non sono suoi, glieli manda proprio oggi Valeria.", trans: "是啊，因为笔记不是他的，是Valeria今天要发给他的。" },
+        { speaker: "Gianna", text: "E chi è?", trans: "她是谁？" },
+        { speaker: "Lorenzo", text: "Un'antipatica... pensa che supera quasi tutti gli esami con 30 e lode!", trans: "一个讨厌鬼……你知道吗，她几乎门门考试都是30分加优等！" },
+        { speaker: "Gianna", text: "Ed è antipatica per questo?", trans: "就因为这个她就讨厌了？" },
+        { speaker: "Lorenzo", text: "Ma no, il problema è che se ne vanta... una secchiona che non hai idea!", trans: "不是啦，问题是她到处炫耀……你不知道她有多书呆子！" },
+        { speaker: "Gianna", text: "Secchiona, però gli appunti ve li dà, vero?", trans: "书呆子归书呆子，但她愿意给你们笔记，不是吗？" },
+        { speaker: "Lorenzo", text: "Non a me, a Fede.", trans: "不是给我，是给Fede。" },
+        { speaker: "Gianna", text: "Mah! E solo questi appunti bastano?", trans: "嗨！光有这些笔记就够了？" },
+        { speaker: "Lorenzo", text: "Eh, magari! No, devo capire anche quali parti del libro leggere, mica posso studiare tutto!", trans: "唉，要真那样就好了！不，我还得搞清楚该读哪些部分，总不能全背下来吧！" },
+        { speaker: "Gianna", text: "Dai, non ti preoccupare, andrà tutto bene! A che ora è l'appello?", trans: "好啦，别担心，一切都会顺利的！考试几点？" },
+        { speaker: "Lorenzo", text: "Venerdì pomeriggio, alle 6.", trans: "周五下午六点。" },
+        { speaker: "Gianna", text: "Ah, se vuoi dopo il lavoro ti passo a prendere.", trans: "啊，如果你愿意的话，下班后我去接你。" },
+        { speaker: "Lorenzo", text: "Bene, così poi andiamo a festeggiare!", trans: "太好了，考完咱们就去庆祝！" },
+        { speaker: "Gianna", text: "Ok, ma tu pensa prima a passare l'esame... e poi festeggiamo.", trans: "好吧，但你先想着怎么考过……然后我们再庆祝。" }
+      ]
+    },
+    {
+      title: "2. Amici su cui contare",
+      lines: [
+        { speaker: "Gianna", text: "Pronto, ciao Carlo, sono Gianna.", trans: "喂，你好Carlo，我是Gianna。" },
+        { speaker: "Carlo", text: "Oh, ciao Gianna, come stai?", trans: "哦，你好Gianna，最近怎么样？" },
+        { speaker: "Gianna", text: "Bene, e tu? Senti, è un buon momento per quella mini intervista di cui parlavamo?", trans: "挺好的，你呢？哎，现在方便做那个我们之前说的小采访吗？" },
+        { speaker: "Carlo", text: "Certo, a quest'ora sono più tranquillo. Allora, ricordami, che cosa volevi sapere?", trans: "当然，这个时间我比较空。那好，你提醒我一下，你想了解什么？" },
+        { speaker: "Gianna", text: "Dunque, dovrei scrivere un articolo sui nuovi servizi bancari, no? E ho pensato subito a te.", trans: "是这样的，我要写一篇关于新银行服务的文章，马上就想到你了。" },
+        { speaker: "Carlo", text: "Certo. Cosa ti interessa in particolare?", trans: "没问题。你特别对什么感兴趣？" },
+        { speaker: "Gianna", text: "Allora... se non sbaglio, voi avete un conto per studenti e disoccupati, vero?", trans: "那么……如果我没记错的话，你们有一个针对学生和失业者的账户，对吧？" },
+        { speaker: "Carlo", text: "Esatto. È un nuovo prodotto che è veramente vantaggioso e che offre solo la nostra banca.", trans: "没错。这是一个真正优惠的新产品，而且只有我们银行提供。" },
+        { speaker: "Gianna", text: "Eheh, hai già cominciato a fare pubblicità?", trans: "呵呵，这就开始打广告了？" },
+        { speaker: "Carlo", text: "No, non è pubblicità, te l'ho detto... si tratta di un conto che conviene davvero.", trans: "不，不是广告，我跟你说……这个账户真的很划算。" },
+        { speaker: "Gianna", text: "Perché? In cosa consiste?", trans: "为什么？具体是什么样的？" },
+        { speaker: "Carlo", text: "Beh, lo puoi aprire in un minuto da casa e i costi non superano i 5 euro all'anno!", trans: "嗯，你在家一分钟就能开户，年费不超过5欧元！" },
+        { speaker: "Gianna", text: "Hmm, interessante! E poi?", trans: "嗯，有意思！然后呢？" },
+        { speaker: "Carlo", text: "Poi a casa ti arriva un bancomat con il quale puoi non solo prelevare soldi ovunque, ma anche avere sconti in più di tremila negozi, cinema, teatri, tra cui la Scala.", trans: "然后你会收到一张银行卡，不仅可以随处取钱，还能在三千多家商店、电影院、剧院享受折扣，包括斯卡拉大剧院。" },
+        { speaker: "Gianna", text: "Addirittura? Che bello!", trans: "真的吗？太棒了！" },
+        { speaker: "Carlo", text: "Vedi? Infine, con questo conto, che noi chiamiamo 'aperto', puoi chiedere, sempre online, piccoli prestiti fino a mille euro a un tasso d'interesse molto basso.", trans: "你看吧？最后，用这个我们称为'开放'的账户，你还可以随时在线申请高达一千欧元的小额贷款，利率非常低。" },
+        { speaker: "Gianna", text: "Ma guarda che questo conto interesserebbe anche a me! Però hai detto che è solo per disoccupati e studenti, giusto? Potrebbe andare bene per Lorenzo, te lo ricordi no?", trans: "这个账户我自己都感兴趣！但你说只针对失业者和学生，对吧？可能适合Lorenzo，你还记得他吧？" },
+        { speaker: "Carlo", text: "Come no! Ma è disoccupato o studente?", trans: "当然记得！他是失业还是学生？" },
+        { speaker: "Gianna", text: "Tutti e due...", trans: "两者都是……" }
+      ],
+      vocab: [
+        {it: "disoccupato", pos: "agg./s.", cn: "失业的/失业者"},
+        {it: "vantaggioso", pos: "agg.", cn: "有利的，划算的"},
+        {it: "prelevare", pos: "v.", cn: "提取（钱）"},
+        {it: "sconto", pos: "s.m.", cn: "折扣"},
+        {it: "tasso d'interesse", pos: "s.m.", cn: "利率"},
+        {it: "prestito", pos: "s.m.", cn: "贷款"}
+      ],
+      grammar: [
+        {title: "虚拟式未完成时 (Congiuntivo imperfetto)", content: "对话中出现 'Non credevo che avresti studiato...' 这种结构。credevo che + 虚拟式是常见的表达不确定或主观看法的方式。Congiuntivo imperfetto 的构成：parlare → parlassi, credere → credessi, partire → partissi。"}
+      ]
+    },
+    {
+      title: "3. È bella quanto Roma!",
+      lines: [
+        { speaker: "Lorenzo", text: "Ma veramente tuo padre ha vinto un viaggio?", trans: "你爸真的中了一个旅行大奖？" },
+        { speaker: "Gianna", text: "Sì, te l'avevo detto, ha vinto un fine settimana in una città italiana a scelta, però i miei non ci possono andare.", trans: "是的，我跟你说过了，他赢得了一个意大利城市周末游，任选一城，但我爸妈去不了。" },
+        { speaker: "Lorenzo", text: "E sei sicura che non ci vuoi andare con Marco?", trans: "你确定不想和Marco去？" },
+        { speaker: "Gianna", text: "Ma se è litigato! Cosa dovrei fare, chiamarlo...?", trans: "我们吵架了啊！我该怎么做，打电话给他……？" },
+        { speaker: "Lorenzo", text: "Già! Comunque, andare con me non è il massimo. Ok... e dobbiamo decidere subito?", trans: "也是！不过跟我去也不是什么最好的选择。好吧……我们得马上决定吗？" },
+        { speaker: "Gianna", text: "Sì, tu hai qualche idea?", trans: "对，你有什么想法？" },
+        { speaker: "Lorenzo", text: "Beh, potremmo andare a Roma, no?", trans: "嗯，我们可以去罗马，怎么样？" },
+        { speaker: "Gianna", text: "Hmm, non lo so... ci sono stata un anno fa. Cosa ne pensi di Firenze? Il Duomo, i musei, le piazze...", trans: "嗯，不知道……我一年前去过了。你觉得佛罗伦萨怎么样？大教堂、博物馆、广场……" },
+        { speaker: "Lorenzo", text: "Mah, Firenze è più fredda di Roma, no? E in questo periodo farà sicuramente un freddo cane.", trans: "呃，佛罗伦萨比罗马冷，不是吗？这个时候肯定会特别冷。" },
+        { speaker: "Gianna", text: "Già, non ci avevo pensato... E Venezia? I canali, i ponti, le gondole...", trans: "对哦，我没想到……那威尼斯呢？运河、桥梁、贡多拉……" },
+        { speaker: "Lorenzo", text: "Guarda, Venezia è bella quanto Roma, niente da dire... ma almeno a Roma non c'è tutta quell'umidità! E nemmeno l'acqua alta!", trans: "听着，威尼斯和罗马一样美，没话说……但至少罗马没有那么潮湿！也没有涨潮淹水！" },
+        { speaker: "Gianna", text: "Ho capito... e Napoli? Andremo al Maschio Angioino, sul lungo mare... lì c'è il sole!", trans: "我懂了……那那不勒斯呢？我们可以去看安茹城堡，沿着海滨散步……那里有阳光！" },
+        { speaker: "Lorenzo", text: "Sì, ma il viaggio è più lungo... ci metteremmo 5 ore per arrivare... e abbiamo solo 2 giorni.", trans: "是啊，但路程更远……要坐5个小时才能到……而我们只有两天时间。" },
+        { speaker: "Gianna", text: "Ma non ti va mai bene niente! E Bologna? È più vicina... ed è bellissima.", trans: "你什么都看不上！那博洛尼亚呢？更近……而且非常美。" },
+        { speaker: "Lorenzo", text: "Sì, ma è meno grande di Roma e ha meno monumenti. Quindi, non vedo perché non...", trans: "是的，但比罗马小，古迹也少。所以我不明白为什么不……" },
+        { speaker: "Gianna", text: "Insomma, ti sei fissato con Roma!", trans: "总之，你就是对罗马着了魔了！" },
+        { speaker: "Lorenzo", text: "Io?! Ma quando mai?", trans: "我？！哪有啊？" },
+        { speaker: "Gianna", text: "Aspetta un attimo... La ragazza di cui ti sei innamorato quest'estate è di Roma per caso?", trans: "等一下……你今年夏天爱上的那个女孩，该不会是罗马人吧？" },
+        { speaker: "Lorenzo", text: "Chi, Grazia? Ah, è vero!... Vedi quanti vantaggi ha questa città!", trans: "谁，Grazia？啊，还真是！……你看这座城市有多少优势！" },
+        { speaker: "Gianna", text: "Lorenzo, sei sempre il solito!", trans: "Lorenzo，你永远都是老样子！" }
+      ],
+      vocab: [
+        {it: "fissarsi con", pos: "v.", cn: "对……着迷，固执于"},
+        {it: "un freddo cane", pos: "esp.", cn: "冷得要命（口语）"},
+        {it: "umidità", pos: "s.f.", cn: "潮湿"},
+        {it: "acqua alta", pos: "s.f.", cn: "（威尼斯）涨潮淹水"},
+        {it: "innamorarsi di", pos: "v.", cn: "爱上……"},
+        {it: "vantaggio", pos: "s.m.", cn: "优势，好处"}
+      ],
+      grammar: [
+        {title: "比较级 (Comparativo)", content: "È più fredda di Roma (比罗马冷); È bella quanto Roma (和罗马一样美); È meno grande di Roma (不如罗马大)。比较级三种形式：più...di (比……更), tanto/quanto... (和……一样), meno...di (不如……)。"},
+        {title: "条件式 (Condizionale)", content: "Potremmo andare a Roma (我们可以去罗马); Dovrei scrivere... (我应该写……); Farebbe sicuramente freddo (肯定会冷)。Condizionale 用于礼貌建议、假设和不确定的表述。"}
+      ]
+    },
+    {
+      title: "4. Roma la fondarono Romolo e Remo.",
+      lines: [
+        { speaker: "Lorenzo", text: "Per favore, dimmi che questo è il programma per l'intero viaggio!", trans: "拜托你告诉我，这是整个行程的安排！" },
+        { speaker: "Gianna", text: "Sì, ti piacerebbe! Questi sono i monumenti che visiteremo domani!", trans: "是啊，你想得美！这些是咱们明天要参观的景点！" },
+        { speaker: "Lorenzo", text: "Tutti questi?! Sul serio? È proprio necessario?", trans: "全部？！真的吗？这都有必要吗？" },
+        { speaker: "Gianna", text: "Eh! Allora, dopo il Colosseo andiamo al Circo Massimo, che per secoli fu il più grande stadio del mondo, lo sapevi?", trans: "嘿！那么，看完斗兽场我们去马克西穆斯竞技场，那里曾经是几个世纪里世界上最大的体育场，你知道吗？" },
+        { speaker: "Lorenzo", text: "No, comunque lo stadio più bello è San Siro, come ogni milanista sa!", trans: "不知道，不过最美的体育场是圣西罗，每个米兰球迷都知道！" },
+        { speaker: "Gianna", text: "Certo... Poi andiamo al Mausoleo che i romani costruirono per Augusto.", trans: "当然……然后我们去罗马人为奥古斯都建造的陵墓。" },
+        { speaker: "Lorenzo", text: "Ah, il fondatore di Roma!", trans: "啊，罗马的奠基人！" },
+        { speaker: "Gianna", text: "Veramente lui fondò l'Impero Romano, Roma la fondarono Romolo e Remo, come tutti sanno.", trans: "事实上他建立的是罗马帝国，罗马是由罗慕路斯和勒莫斯建立的，这是常识啊。" },
+        { speaker: "Lorenzo", text: "Era una battuta...", trans: "我开了个玩笑……" },
+        { speaker: "Gianna", text: "Sì, sì... Dopo andiamo alle Terme di Caracalla.", trans: "是是是……之后我们去卡拉卡拉浴场。" },
+        { speaker: "Lorenzo", text: "Ah, Caracalla, l'ultimo imperatore romano, no?", trans: "啊，卡拉卡拉，罗马最后一位皇帝，对吧？" },
+        { speaker: "Gianna", text: "Veramente no, ma non importa... Poi dobbiamo assolutamente visitare la Domus Aurea.", trans: "其实不是，不过算了……然后我们一定要去看黄金宫殿。" },
+        { speaker: "Lorenzo", text: "Ah, sì, la villa che costruì Marco Aurelio?", trans: "啊，对，马可·奥勒留建造的那座别墅？" },
+        { speaker: "Gianna", text: "No, Nerone!", trans: "不，是尼禄！" },
+        { speaker: "Lorenzo", text: "Brava, Nerone. Quel pazzo che bruciò Roma e poi accusò Cesare.", trans: "对了，尼禄。那个疯子烧了罗马然后嫁祸给凯撒。" },
+        { speaker: "Gianna", text: "Sì, Cesare, ma se era morto 100 anni prima?!", trans: "对，嫁祸凯撒，但他不是一百年前就死了吗？！" },
+        { speaker: "Lorenzo", text: "Dai, ti sto prendendo in giro!", trans: "好啦，我在逗你玩呢！" },
+        { speaker: "Gianna", text: "Sì, certo. Ma scusa, tu a scuola il libro di storia non l'aprivi mai?", trans: "是啊，当然。不过说真的，你在学校从来不看历史书的吗？" },
+        { speaker: "Lorenzo", text: "All'inizio sì... poi ho litigato con il professore e ho odiato la storia!", trans: "一开始还看……后来跟教授吵了一架，就恨上历史了！" },
+        { speaker: "Gianna", text: "Davvero?! E perché avete litigato?", trans: "真的吗？！为什么吵架？" },
+        { speaker: "Lorenzo", text: "Perché era interista!", trans: "因为他是国际米兰球迷！" }
+      ]
+    },
+    {
+      title: "5. Posso venire a correre con te?",
+      lines: [
+        { speaker: "Lorenzo", text: "Stefania, sei un fenomeno, sai!", trans: "Stefania，你真是个了不起的人！" },
+        { speaker: "Stefania", text: "Io? In che senso?", trans: "我？什么意思？" },
+        { speaker: "Lorenzo", text: "Ma come? Frequenti tutte le lezioni, superi tutti gli esami e trovi anche il tempo per fare attività fisica e tenerti così in forma!", trans: "怎么啦？你每节课都上，门门考试都过，还有时间锻炼身体、保持这么好的身材！" },
+        { speaker: "Stefania", text: "Ah, ecco perché... Grazie Lorenzo! Sì, è vero che mi alleno spesso. Sai, oltre alla mente, penso che sia importante prendersi cura del nostro corpo.", trans: "啊，原来如此……谢谢你Lorenzo！是的，我确实经常锻炼。你知道，除了头脑，我认为照顾好自己的身体也很重要。" },
+        { speaker: "Lorenzo", text: "È proprio ciò che penso anch'io.", trans: "我也是这么想的。" },
+        { speaker: "Stefania", text: "Ma non tanto nel senso dell'aspetto fisico, quanto della salute.", trans: "但与其说是外表方面，不如说是为了健康。" },
+        { speaker: "Lorenzo", text: "Brava, giusto. Non credo che tutti la pensino come te. Tu che fai, vai in palestra?", trans: "对的，没错。我不认为每个人都跟你想的一样。你做什么运动，去健身房？" },
+        { speaker: "Stefania", text: "No, guarda, in palestra mi annoio. Faccio nuoto, ma soprattutto vado a correre quasi tutti i giorni.", trans: "不，说实话，健身房让我觉得无聊。我游泳，但主要还是几乎每天都去跑步。" },
+        { speaker: "Lorenzo", text: "Ah, e corri molto?", trans: "啊，你跑得多吗？" },
+        { speaker: "Stefania", text: "Mah, una mezz'oretta più o meno. E tu?", trans: "嗯，大概半个小时左右。你呢？" },
+        { speaker: "Lorenzo", text: "Io? Sì, anch'io, meno spesso di te, ma sì, correre mi rilassa.", trans: "我？对，我也是，不过没你那么频繁，但跑步确实让我放松。" },
+        { speaker: "Stefania", text: "Bravo, Lorenzo. Ma secondo te è normale che tante persone alla nostra età preferiscano fare una vita sedentaria?", trans: "好样的，Lorenzo。但你觉得我们这个年龄那么多人喜欢久坐不动的生活方式正常吗？" },
+        { speaker: "Lorenzo", text: "No, infatti, siamo in pochi a essere sportivi...", trans: "不，确实如此，我们当中爱运动的人很少……" },
+        { speaker: "Stefania", text: "E poi non pensare che lo sport da solo basti... è altrettanto importante mangiare sano.", trans: "而且别以为光运动就够了……健康饮食同样重要。" },
+        { speaker: "Lorenzo", text: "Quello che dico sempre anch'io. Comunque, chissà, magari un giorno possiamo andare a correre insieme.", trans: "我也一直这么说。不过，谁知道呢，也许有一天我们可以一起跑步。" },
+        { speaker: "Stefania", text: "Certo, perché no? ...La settimana prossima?", trans: "当然，为什么不呢？……下周？" },
+        { speaker: "Lorenzo", text: "Eh?! ...Sì, molto volentieri...", trans: "啊？！……好，非常乐意……" },
+        { speaker: "Narratore", text: "...CINQUE MINUTI DOPO", trans: "……五分钟后" },
+        { speaker: "Lorenzo", text: "Pronto, ciao Gianna. Senti, domani posso venire a correre con te?", trans: "喂，你好Gianna。那个，明天我能跟你一起去跑步吗？" },
+        { speaker: "Gianna", text: "A correre, tu?! Come mai?", trans: "跑步，你？！怎么回事？" },
+        { speaker: "Lorenzo", text: "È importante che io riprenda a fare sport.", trans: "我重新开始运动很重要。" },
+        { speaker: "Gianna", text: "Ok, ma sono anni che non fai sport, perché questa fretta?", trans: "好吧，但你多少年没运动了，怎么这么着急？" },
+        { speaker: "Lorenzo", text: "Perché non è normale che tante persone facciano una vita sedentaria!... Niente, ti spiego domani.", trans: "因为这么多人过久坐不动的生活是不正常的！……没什么，明天再跟你解释。" }
+      ]
+    },
+    {
+      title: "6. Non me la voglio perdere!",
+      lines: [
+        { speaker: "Gianna", text: "Sig. Direttore, ha visto il nuovo programma della Scala?", trans: "经理先生，您看了斯卡拉大剧院的新节目单了吗？" },
+        { speaker: "direttore", text: "Ah, è già uscito? Lei è sul sito adesso? Legga, vediamo cosa danno!", trans: "啊，已经出来了吗？您正在网站上？快看看，演什么！" },
+        { speaker: "Gianna", text: "Dunque, a ottobre c'è La Traviata.", trans: "那么，十月有《茶花女》。" },
+        { speaker: "direttore", text: "Ah, Verdi, che genio, che musiche! È il mio preferito in assoluto! Veda un po' in quali giorni, non me la voglio perdere!", trans: "啊，威尔第，多么天才，多么美妙的音乐！他绝对是我的最爱！您看看具体哪几天，我可不想错过！" },
+        { speaker: "Gianna", text: "Allora... dal 20 al 28. Vuole che controlli se ci sono biglietti disponibili?", trans: "那么……20号到28号。需要我查查还有没有票吗？" },
+        { speaker: "direttore", text: "No, grazie, lo farò io più tardi. Sa, io ho visto dal vivo i più grandi interpreti. Pensi che La Traviata l'ho vista con il grande Pavarotti: un'esperienza indimenticabile.", trans: "不用了，谢谢，我晚点自己查。您知道，我看过最伟大的歌唱家的现场演出。想想看，《茶花女》我是和伟大的帕瓦罗蒂一起看的：一次难忘的经历。" },
+        { speaker: "Gianna", text: "Pavarotti?! Chissà che emozione! Poi a novembre c'è la Turandot.", trans: "帕瓦罗蒂？！那该多激动啊！然后十一月有《图兰朵》。" },
+        { speaker: "direttore", text: "Ah, Puccini, 'Nessun dorma', che bello! Se non sbaglio, l'avevo vista con Cecilia Gasdia. A novembre, eh? Ci andrò senz'altro!", trans: "啊，普契尼，《今夜无人入睡》，太美了！如果我没记错的话，我是和Cecilia Gasdia一起看的。十一月是吧？我一定要去！" },
+        { speaker: "Gianna", text: "Bene... senta, a gennaio poi danno Il Trovatore.", trans: "好的……您听着，一月上演《游吟诗人》。" },
+        { speaker: "direttore", text: "Che bello, da non perdere assolutamente! Mi sa che l'avevo visto con Riccardo Muti come direttore d'orchestra.", trans: "太美了，绝对不能错过！我记得好像是和指挥家里卡尔多·穆蒂一起看的。" },
+        { speaker: "Gianna", text: "Davvero?! A proposito, il nuovo direttore della Scala è veramente bravo.", trans: "真的吗？！说起来，斯卡拉的新指挥真的很棒。" },
+        { speaker: "direttore", text: "Sì, me lo dicono tutti. Ma quindi anche lei è appassionata di musica lirica!", trans: "是的，大家都这么说。所以您也热爱歌剧！" },
+        { speaker: "Gianna", text: "Beh, sì. Pensi che domani andrò a chiedere informazioni per un corso di canto! Ma solo come hobby, niente di più.", trans: "嗯，是的。您知道吗，我明天要去咨询一个声乐课程！不过只是爱好而已。" },
+        { speaker: "direttore", text: "Brava! Complimenti! Per me, invece, la lirica non è solo un passatempo, ma una vera passione! Potrei ascoltarla per ore!", trans: "太好了！恭喜！对我来说，歌剧不仅仅是一种消遣，而是真正的热爱！我可以听上好几个小时！" },
+        { speaker: "Gianna", text: "Sì, l'avevo capito... Questa domenica c'è il Gran Galà dell'Opera con i più grandi nomi internazionali. Lei sicuramente ci sarà, no?", trans: "是的，我看出来了……这个周日有歌剧盛典，汇聚了最顶尖的国际名家。您肯定会去的，对吧？" },
+        { speaker: "direttore", text: "Eh... no... a quell'ora c'è il calcio in tv...", trans: "呃……不……那个时间电视上有球赛……" }
+      ]
+    },
+    {
+      title: "7. Vivere fuori città",
+      lines: [
+        { speaker: "Lorenzo", text: "Ma stai cercando in centro o in periferia?", trans: "你在找市中心的房子还是郊区的？" },
+        { speaker: "Daniela", text: "Veramente... fuori città!", trans: "其实……是城外！" },
+        { speaker: "Lorenzo", text: "Davvero? Credevo che tu volessi vivere in centro.", trans: "真的吗？我以为你想住市中心呢。" },
+        { speaker: "Daniela", text: "Ma è lo stesso: prenderei il treno e poi sempre con la metro arriverei all'università, 30 minuti invece di 20.", trans: "但都一样：我坐火车再换地铁去大学，30分钟而不是20分钟。" },
+        { speaker: "Lorenzo", text: "Vero, ma non ho capito perché.", trans: "也是，但我不明白为什么。" },
+        { speaker: "Daniela", text: "Per tanti motivi Lorenzo: traffico, inquinamento, rumore!", trans: "原因很多Lorenzo：交通、污染、噪音！" },
+        { speaker: "Lorenzo", text: "E va be', come in tutte le grandi città. Ma in compenso avresti tante cose a portata di mano: cinema, teatri, locali, palestre, negozi.", trans: "好吧，所有大城市都这样。但作为补偿，你什么都在手边：电影院、剧院、酒吧、健身房、商店。" },
+        { speaker: "Daniela", text: "Certo, solo che io, fratellino, mi voglio laureare in 3 anni, non in 10!", trans: "当然，不过呢，小弟，我想三年毕业，不是十年！" },
+        { speaker: "Lorenzo", text: "E dai! Sarò un po' fuori corso, ma sto per laurearmi, eh?", trans: "哎呀！我虽然是有点延迟毕业，但我快毕业了好吗！" },
+        { speaker: "Daniela", text: "Sì, da tre anni... Comunque, magari trovassi qualcosa in una piccola città vicino a Milano: con più tranquillità, più verde, più aria pulita.", trans: "是啊，延迟了三年……不过，或许能在米兰附近找个小城：更安静、更多绿地、更干净的空气。" },
+        { speaker: "Lorenzo", text: "Non sapevo che fossi ecologista.", trans: "我不知道你是个环保主义者。" },
+        { speaker: "Daniela", text: "Non c'entra l'ecologia, è solo qualità della vita. All'inizio, quando venivo a trovarti, pensavo che tutto qui fosse bellissimo.", trans: "这和环保无关，只是生活质量问题。刚开始我来看你的时候，我觉得这里一切都美极了。" },
+        { speaker: "Lorenzo", text: "Infatti, cos'è cambiato?", trans: "是啊，什么变了？" },
+        { speaker: "Daniela", text: "Non avevo capito che gli studenti vivessero così: sempre di corsa e in appartamenti piccoli come il tuo!", trans: "我没意识到学生们的生活是这样：总是匆匆忙忙，住在像你那样小的公寓里！" },
+        { speaker: "Lorenzo", text: "Dai, non è così piccolo.", trans: "好啦，没那么小。" },
+        { speaker: "Daniela", text: "E non immaginavo che una cosa semplice, come prendere la metro all'ora di punta o trovare parcheggio, potesse essere così difficile.", trans: "而且我没想到像高峰期坐地铁或者找停车位这样简单的事情会这么难。" },
+        { speaker: "Lorenzo", text: "Mah, io ormai non ci faccio caso, a me la vita in città piace.", trans: "唉，我现在已经无所谓了，我喜欢城市生活。" },
+        { speaker: "Daniela", text: "Ovvio, con tutte le tue allergie non potresti mai vivere in campagna!", trans: "显然，以你所有的过敏症，你永远没法住在乡下！" },
+        { speaker: "Lorenzo", text: "Io?! Se lo vuoi sapere, domenica accompagnerò Gianna a un agriturismo.", trans: "我？！如果你想知道的话，我周日要陪Gianna去一个农家乐。" },
+        { speaker: "Daniela", text: "Ah... non pensavo che ti piacessero queste cose!", trans: "啊……我没想到你喜欢这种东西！" },
+        { speaker: "Lorenzo", text: "Infatti, le dovevo un favore...", trans: "其实，我欠她一个人情……" }
+      ],
+      vocab: [
+        {it: "periferia", pos: "s.f.", cn: "郊区"},
+        {it: "inquinamento", pos: "s.m.", cn: "污染"},
+        {it: "a portata di mano", pos: "esp.", cn: "触手可及，近在咫尺"},
+        {it: "fuori corso", pos: "esp.", cn: "（学生）超过规定学习年限"},
+        {it: "laurearsi", pos: "v.", cn: "毕业"},
+        {it: "tranquillità", pos: "s.f.", cn: "宁静，安静"},
+        {it: "agriturismo", pos: "s.m.", cn: "农家乐"}
+      ],
+      grammar: [
+        {title: "虚拟式未完成时 (Congiuntivo imperfetto) — 二", content: "'Non sapevo che fossi ecologista' — 主句是过去时（sapevo），从句用虚拟式未完成时（fossi）。'Non immaginavo che... potesse essere così difficile' — 同样的结构。这种搭配在意大利语中非常常见。"},
+        {title: "远过去时 (Passato remoto)", content: "'Non avevo capito che gli studenti vivessero così' — 使用 trapassato prossimo + congiuntivo imperfetto，表示「我之前没意识到……」，强调先于另一个过去动作之前发生。"}
+      ]
+    },
+    {
+      title: "8. Ci sono tanti furti in questo periodo...",
+      lines: [
+        { speaker: "Ugo", text: "È ufficiale: ho una super nonna!", trans: "官方认证：我有一个超级奶奶！" },
+        { speaker: "Lorenzo", text: "Perché?", trans: "为什么？" },
+        { speaker: "Ugo", text: "Allora ieri le sono entrati i ladri in casa: due persone con la scusa di venderle un'assicurazione.", trans: "是这样的，昨天有小偷进了她家：两个人借口说要卖保险给她。" },
+        { speaker: "Lorenzo", text: "Oddio poverina! E lei che ha fatto?", trans: "天哪，可怜的人！那她做了什么？" },
+        { speaker: "Ugo", text: "Le hanno detto: 'Signora, noi vendiamo polizze per la casa, sa ci sono tanti furti in questo periodo!'", trans: "他们对她说：'女士，我们卖房屋保险，您知道最近有很多盗窃案！'" },
+        { speaker: "Lorenzo", text: "Ma guarda che faccia tosta!", trans: "真是脸皮厚啊！" },
+        { speaker: "Ugo", text: "Mentre uno si è seduto con lei in cucina l'altro le ha detto: 'Io devo valutare gli oggetti che ha in casa' e ha cominciato a girare per le camere.", trans: "当一个人和她一起坐在厨房时，另一个人对她说：'我需要评估您家里的物品'，然后开始在房间里转悠。" },
+        { speaker: "Lorenzo", text: "Ma questo è il colmo! E lei non si è insospettita?", trans: "这也太过分了吧！她没起疑心吗？" },
+        { speaker: "Ugo", text: "Come no! Ha finto di collaborare e poi ha detto al ladro: 'Senta, devo chiamare mio nipote che si ricorda meglio dove sono i vari oggetti di valore e quanti soldi abbiamo in casa'. E ha chiamato me, non la polizia, in modo che il ladro non sospettasse nulla.", trans: "怎么会不起疑！她假装配合，然后对那个小偷说：'听着，我得给我侄子打个电话，他更记得家里的贵重物品和现金都在哪儿。'然后她打给了我，不是警察，这样小偷就不会起疑心。" },
+        { speaker: "Lorenzo", text: "Hai capito la nonna?!", trans: "你看看这奶奶！" },
+        { speaker: "Ugo", text: "Mi ha detto: 'Ugo, sai dov'è quell'anello d'oro di tua madre? Lo voglio far vedere ai signori dell'assicurazione'.", trans: "她对我说：'Ugo，你知道你妈妈那个金戒指在哪儿吗？我想拿给保险公司的先生们看看。'" },
+        { speaker: "Lorenzo", text: "E tu?", trans: "那你呢？" },
+        { speaker: "Ugo", text: "Io ho capito che qualcosa non andava e le ho detto: 'Nonna, secondo me questi sono dei ladri'. E lei ha risposto: 'Ovvio, perciò ho telefonato a te così mi aiuti... a ricordare'. Quindi, ho chiamato la polizia che è arrivata subito e li ha arrestati!", trans: "我意识到事情不对劲，对她说：'奶奶，我觉得这些人是小偷。'她回答说：'当然了，所以我打电话给你，让你帮我……回忆一下。'于是我报了警，警察很快就到了，把他们逮捕了！" },
+        { speaker: "Lorenzo", text: "Caspita! Davvero una super nonna!", trans: "天哪！真是个超级奶奶！" },
+        { speaker: "Ugo", text: "Eh, sì, i poliziotti le hanno detto: 'Signora Elsa, lei è un fenomeno, la nomineremo 'agente Baldini'!'", trans: "是啊，警察对她说：'Elsa女士，您真是个了不起的人，我们要任命您为'Baldini警官'！'" },
+        { speaker: "Lorenzo", text: "Un attimo: tua nonna si chiama Elsa Baldini?! Oddio, ma lo sai che la settimana scorsa abbiamo avuto una conversazione telefonica... come dire... interessante? Va be', ora ti racconto...", trans: "等一下：你奶奶叫Elsa Baldini？！天哪，你知道吗，上周我们有过一次……怎么说呢……有趣的电话交谈？算了，我现在跟你说……" }
+      ],
+      vocab: [
+        {it: "furto", pos: "s.m.", cn: "盗窃"},
+        {it: "ladro", pos: "s.m.", cn: "小偷"},
+        {it: "faccia tosta", pos: "esp.", cn: "厚脸皮"},
+        {it: "insospettirsi", pos: "v.", cn: "起疑心"},
+        {it: "fingere", pos: "v.", cn: "假装"},
+        {it: "arrestare", pos: "v.", cn: "逮捕"}
+      ],
+      grammar: [
+        {title: "命令式 (Imperativo) - 尊称", content: "'Senta' (您听着) — 这是尊称形式的命令式。'Mi dica' (您请说), 'Mi faccia vedere' (您让我看看)。动词变位：parlare → parli, credere → creda, partire → parta。这个形式在正式场合和对长辈/上级使用。"}
+      ]
+    },
+    {
+      title: "9. Un problema da risolvere",
+      lines: [
+        { speaker: "Lorenzo", text: "'Oggi potrebbe essere una bella giornata...'", trans: "'今天可能会是美好的一天……'" },
+        { speaker: "Gianna", text: "In che senso?", trans: "什么意思？" },
+        { speaker: "Lorenzo", text: "'...se riuscite a risolvere un problema in fretta!'", trans: "'……如果你们能快速解决一个问题！'" },
+        { speaker: "Gianna", text: "Che problema, Lorenzo?!", trans: "什么问题，Lorenzo？！" },
+        { speaker: "Lorenzo", text: "'Però attenzione: la memoria non è il vostro forte!'", trans: "'但注意：记忆力不是你们的强项！'" },
+        { speaker: "Gianna", text: "Ma che stai dicendo? Ah, stai leggendo l'oroscopo!", trans: "你在说什么呢？啊，你在看星座运势！" },
+        { speaker: "Lorenzo", text: "Sì, perché lo dici così?", trans: "是啊，你干嘛这种语气？" },
+        { speaker: "Gianna", text: "Ma credi ancora a queste cose? Ti facevo più intelligente...", trans: "你还信这种东西？我以前觉得你挺聪明的……" },
+        { speaker: "Lorenzo", text: "Guarda che c'è tanta gente che inizia la giornata consultando l'oroscopo.", trans: "你知道吗，很多人都是靠看星座运势开始新的一天的。" },
+        { speaker: "Gianna", text: "Lo so, ma tu ci credi o no?", trans: "我知道，但你自己信不信？" },
+        { speaker: "Lorenzo", text: "Mah... non è che ci creda proprio... diciamo che leggere l'oroscopo è più un'abitudine...", trans: "嗯……也不是真的信……只能说看星座运势更像是一种习惯……" },
+        { speaker: "Gianna", text: "Sai, anch'io lo facevo un tempo, ma poi, dopo aver capito che erano solo stupidaggini, ho smesso: avevo 16 anni...", trans: "你知道吗，我以前也看，但后来发现那都是胡说八道，就不看了：那年我才16岁……" },
+        { speaker: "Lorenzo", text: "Comunque, tranquilla, lo so che non devi prenderlo sul serio...", trans: "不过你放心，我知道不能当真……" },
+        { speaker: "Gianna", text: "Meno male! ...Ma secondo te, in che modo 'potrebbe essere una bella giornata'?", trans: "那就好！……但你觉得，'可能会是美好的一天'是什么意思？" },
+        { speaker: "Lorenzo", text: "Non lo so, guarda! E poi dice che 'la memoria non è il mio forte!'", trans: "我也不知道啊！它还说我'记忆力不是我的强项'！" },
+        { speaker: "Gianna", text: "E chissà che problema dovrai risolvere...", trans: "那谁知道你要解决什么问题呢……" },
+        { speaker: "Lorenzo", text: "Mannaggia, ho proprio un vuoto, non riesco a ricordare!", trans: "糟糕，我真的空白了，想不起来！" },
+        { speaker: "Gianna", text: "Eh... un incontro, un compleanno, forse?", trans: "呃……一个约会，一个生日，也许是？" },
+        { speaker: "Lorenzo", text: "Un compleanno?! Non mi viene niente in mente.", trans: "生日？！我想不起来任何事。" }
+      ]
+    }
+  ],
+
+  // Espressioni
+  espressioni: [
+    {
+      group: "Esprimere sorpresa（表达惊讶）",
+      items: ["Ma va!", "Scherzi?", "Davvero?!", "Dici sul serio!?", "Possibile?!", "Impossibile!", "Chi l'avrebbe mai detto?", "Caspita!", "Incredibile!", "Non è vero!", "Stai scherzando?", "Non ci credo!"]
+    },
+    {
+      group: "Chiarire（澄清解释）",
+      items: ["Cioè... (也就是说...)", "voglio dire... (我想说...)", "nel senso che... (在...意义上)"]
+    },
+    {
+      group: "Contraddire（反驳）",
+      items: ["ma no (不对)", "ma che dici (你胡说什么)", "Ma come...? (怎么可能？)", "non è vero (不是真的)", "Non proprio... (不见得...)"]
+    },
+    {
+      group: "Confermare（确认）",
+      items: ["Non c'è dubbio..., è certo!", "Ti/Le posso garantire che...", "Lo so bene/perfettamente!", "È sicuro che...!", "Le/Ti assicuro che...", "Non scherzo...!", "È noto!"]
+    },
+    {
+      group: "Chiedere di confermare（请求确认）",
+      items: ["È vero che...?", "Ma veramente...?", "Mi segui/segue?", "Davvero...?", "Sul serio...?", "È (tutto) chiaro?", "Scusa/Scusi, ha detto...?"]
+    },
+    {
+      group: "Dare istruzioni（下达指示）",
+      items: ["Si avvisa... / Si avvisano...", "Siete pregati di...", "Si pregano...", "Preferirei che..."]
+    },
+    {
+      group: "Vietare in modo formale（正式禁止）",
+      items: ["È severamente vietato...", "Non è permesso..."]
+    },
+    {
+      group: "Gestire i turni di parola（管理话轮）",
+      items: ["Non mi interrompere, lasciami parlare", "Adesso tocca a me! Secondo me, invece,...", "Vorrei dire anch'io una cosa...!", "Non mi parlare sopra!"]
+    },
+    {
+      group: "Esprimere indifferenza（表达冷漠）",
+      items: ["Ma chi se ne frega...!", "E con ciò? Non me ne importa niente!", "Me ne infischio...!", "E allora?!"]
+    }
+  ],
+
+  // Proverbi
+  proverbi: [
+    { it: "Chi dorme non piglia pesci.", cn: "睡懒觉的人捉不到鱼。/ 早起的鸟儿有虫吃。" },
+    { it: "Chi va piano va sano e va lontano.", cn: "欲速则不达。/ 小心驶得万年船。" },
+    { it: "Chi fa da sé fa per tre.", cn: "自己动手，丰衣足食。/ 能者多劳。" },
+    { it: "Chi tardi arriva male alloggia.", cn: "迟到者没好住处。/ 吃屎都等不到热乎的。" }
+  ],
+
+  // Esercizi
+  esercizi: [
+    { num: 1, text: "Che cosa hai regalato a tuo fratello per il suo compleanno?", priority: false, answer: "Ho regalato a mio fratello un libro per il suo compleanno." },
+    { num: 2, text: "Per quale motivo impari l'italiano?", priority: true, answer: "Imparo l'italiano perché mi piace la cultura italiana e voglio viaggiare in Italia." },
+    { num: 3, text: "Chi era al telefono?", priority: false, answer: "Era Marco al telefono." },
+    { num: 4, text: "Da cosa dipende se vieni o no?", priority: false, answer: "Dipende dal tempo e dai miei impegni di lavoro." },
+    { num: 5, text: "Qual è stato il momento più importante della tua vita?", priority: true, answer: "Il momento più importante della mia vita è stato quando mi sono laureato/laureata." },
+    { num: 6, text: "Da quando studi l'italiano?", priority: true, answer: "Studio l'italiano da circa due anni." }
+  ],
+
+  // Cultura - full text content
+  cultura: [
+    {
+      title: "1. Gli anni di scuola",
+      text: "In Italia i bambini iniziano la scuola a circa 6 anni, frequentando il primo anno di scuola elementare (detta anche scuola primaria), che dura 5 anni. Poi i ragazzi, fino ai 14 anni, frequentano quella che comunemente si chiama la scuola media.\n\nAlla fine della scuola media, (più correttamente detta scuola secondaria di primo grado), dopo aver sostenuto l'esame di licenza, i ragazzi si iscrivono alla scuola secondaria di secondo grado, o più semplicemente scuola superiore (licei, istituti tecnici, istituti professionali), in base alle loro preferenze. Quest'ultimo percorso di studi ha una durata di 4 o 5 anni e termina con l'esame di maturità (o formalmente 'esame di Stato'). Ottenuto il diploma di maturità, gli studenti decidono se proseguire gli studi iscrivendosi ad una facoltà universitaria o se iniziare a lavorare.",
+      trans: "在意大利，儿童大约6岁开始上学，进入小学一年级（也称初等教育），学制5年。之后，孩子们直到14岁，就读通常所说的初中。初中（更准确地说叫第一阶段中等教育）结束时，学生通过毕业考试后，根据自己的偏好注册到第二阶段中等教育，也就是更简单说的高中（包括文科高中、技术学院、职业学院）。这最后一段学习历程持续4或5年，以毕业考试（正式名称为'国家考试'）告终。获得高中文凭后，学生们决定是继续上大学还是开始工作。",
+      vocab: [
+        {it: "scuola elementare/primaria", cn: "小学"},
+        {it: "scuola media", cn: "初中"},
+        {it: "scuola superiore", cn: "高中"},
+        {it: "esame di maturità", cn: "高中毕业考试"},
+        {it: "diploma", cn: "文凭"},
+        {it: "facoltà universitaria", cn: "大学院系"}
+      ]
+    },
+    {
+      title: "2. IL MIRACOLO ECONOMICO",
+      text: "Dopo la Seconda guerra mondiale, l'Italia appare come un Paese distrutto e anche molto povero, con un'economia basata sull'agricoltura. È grazie agli aiuti degli Stati Uniti per l'Europa, il cosiddetto piano Marshall, che l'Italia comincia la ricostruzione del Paese e la ripresa della sua economia. Comincia a costruire grandi opere pubbliche, ad esempio l'autostrada del Sole che collega Napoli a Milano, e più tardi l'autostrada Adriatica che collega Taranto a Bologna. Unire il Nord e il Sud facilita la mobilità di merci e persone e, di conseguenza, lo sviluppo dell'economia del Paese.\n\nAumentano i posti di lavoro nelle grandi aziende che in questi anni si rinnovano utilizzando nuove tecnologie. Agli inizi degli anni '60 l'Italia esporta il 40% della propria produzione in Europa, in particolare prodotti come automobili, frigoriferi, abbigliamento e prodotti alimentari.\n\nSimbolo dell'Italia del boom economico è soprattutto la FIAT, l'azienda della famiglia Agnelli, che crea i primi modelli di automobili pensate per la città, le utilitarie. La Seicento e la Cinquecento, infatti, sono macchine piccole e comode per le famiglie che vivono in città e, soprattutto, sono economiche.",
+      trans: "二战后，意大利呈现为一个被摧毁且非常贫穷的国家，经济以农业为基础。正是得益于美国对欧洲的援助，即所谓的马歇尔计划，意大利开始了国家重建和经济复苏。它开始建设大型公共工程，例如连接那不勒斯和米兰的太阳高速公路，以及后来连接塔兰托和博洛尼亚的亚得里亚海高速公路。连接南北促进了货物和人员的流动，进而推动了国家经济的发展。大型企业的就业岗位增加，这些企业在此期间利用新技术进行革新。60年代初，意大利将其40%的产品出口到欧洲，特别是汽车、冰箱、服装和食品等产品。意大利经济繁荣的象征尤其是菲亚特汽车公司，这个阿涅利家族的企业创造了首批为城市设计的经济型轿车。Seicento（600）和Cinquecento（500）确实是小型、方便的城市家庭用车，而且最重要的是价格实惠。"
+    },
+    {
+      title: "3. LE DIFFERENZE CHE CI UNISCONO",
+      text: "Abbiamo chiesto ad alcune persone per strada la loro opinione sull'altra metà del Paese: a quelli del Nord cosa pensano del Sud e viceversa.",
+      trans: "我们采访了一些路人，询问他们对国家另一半的看法：北方人怎么看待南方，反之亦然。",
+      longText: true
+    },
+    {
+      title: "4. ROMA - MILANO - VENEZIA - NAPOLI - PALERMO",
+      text: "Roma è la capitale d'Italia dal 1871... Milano, la città della moda, è il più importante centro industriale... Venezia è una città unica, costruita sull'acqua... Napoli manifesta il suo carattere nelle strade storiche... Palermo mostra i segni delle diverse culture...",
+      trans: "罗马自1871年起就是意大利的首都...米兰，时尚之都，是最重要的工业、商业和金融中心...威尼斯是一座建在水上的独特城市...那不勒斯的气质体现在历史街道中...巴勒莫展现了不同文化的印记..."
+    },
+    {
+      title: "5. MUSEI D'ITALIA",
+      text: "L'Italia ha il merito di concentrare sul suo territorio una straordinaria quantità di musei, siti archeologici e monumenti. Firenze — Galleria degli Uffizi: uno dei musei più visitati in Italia. Roma — Musei Vaticani: oltre 6 milioni di visitatori all'anno. Milano — Museo del Novecento: arte contemporanea nel cuore di Milano.",
+      trans: "意大利的独特之处在于其领土上集中了数量惊人的博物馆、考古遗址和纪念碑。佛罗伦萨——乌菲兹美术馆：意大利参观人数最多的博物馆之一。罗马——梵蒂冈博物馆：每年超过600万游客。米兰——九百博物馆：位于米兰市中心的当代艺术博物馆。"
+    }
+  ],
+
+  // Storia e Società
+  storia: [
+    {
+      title: "1. IL FASCISMO E LA SECONDA GUERRA MONDIALE",
+      text: "La vittoria della Prima Guerra Mondiale per molti italiani... è una vittoria 'mutilata', cioè incompleta. Proprio tra questi italiani insoddisfatti il partito fascista, fondato da Benito Mussolini, trova facilmente dei sostenitori e sale al potere nel 1922. Inizia così la dittatura fascista che dura circa 20 anni... Dopo la firma del 'patto d'acciaio' con Hitler, nel giugno del 1940 Mussolini decide di entrare in guerra accanto alla Germania... L'8 settembre 1943 l'Italia si arrende agli Alleati. L'Italia è divisa in due... Nel 1945, grazie all'aiuto dei partigiani, gli Alleati liberano anche il Nord Italia.",
+      trans: "对许多意大利人来说，第一次世界大战的胜利是一场'残缺的'胜利，即不完整的胜利。正是在这些不满的意大利人中，由贝尼托·墨索里尼创立的法西斯党轻易找到了支持者，并于1922年上台。法西斯独裁统治就此开始，持续了大约20年……1940年6月与希特勒签署'钢铁条约'后，墨索里尼决定与德国一同参战……1943年9月8日，意大利向盟军投降。意大利被一分为二……1945年，在游击队的帮助下，盟军也解放了意大利北部。"
+    },
+    {
+      title: "2. L'ITALIA: UNA SOCIETÀ IN CONTINUO CAMBIAMENTO",
+      text: "L'Italia come nazione unita nasce nel 1861... Nel referendum del 2 giugno 1946, gli italiani votano per la Repubblica... II Sessantotto — il 1968 è un anno segnato dalle proteste... Gli anni di piombo — alla fine degli anni '60, inizia un periodo di grande tensione politica...",
+      trans: "意大利作为统一国家诞生于1861年……1946年6月2日的公投中，意大利人投票选择了共和国……六八运动——1968年是抗议活动的一年……铅弹年代——60年代末，开始了政治高度紧张的时期……"
+    },
+    {
+      title: "3. DISOCCUPAZIONE e SOTTOCCUPAZIONE",
+      text: "Uno dei principali problemi della società italiana è sicuramente la disoccupazione: il Belpaese è infatti ai primi posti della classifica europea per percentuale di disoccupati (circa il 10%) e, soprattutto, per la disoccupazione giovanile (circa il 26%, dai 15 ai 24 anni)... L'IMMIGRAZIONE IRREGOLARE — Nonostante i numerosi problemi... l'Italia è ancora considerato un Paese di grandi opportunità... CALO DEMOGRAFICO — L'Italia conta circa 60 milioni di abitanti, ma la sua crescita demografica ha un segno negativo già da alcuni anni...",
+      trans: "意大利社会的主要问题之一无疑是失业：意大利的失业率在欧洲排名靠前（约10%），尤其是青年失业率（15至24岁约26%）……非正常移民——尽管面临诸多问题……意大利仍被视为一个充满机遇的国家……人口下降——意大利约有6000万居民，但人口增长多年来一直为负……",
+      vocab: [
+        {it: "disoccupazione", cn: "失业"},
+        {it: "sottoccupazione", cn: "就业不足"},
+        {it: "lavoro precario", cn: "不稳定工作"},
+        {it: "lavoro in nero", cn: "黑工"},
+        {it: "immigrazione irregolare", cn: "非法移民"},
+        {it: "calo demografico", cn: "人口下降"},
+        {it: "asilo politico", cn: "政治庇护"}
+      ]
+    },
+    {
+      title: "4. LA MAFIA NEL CINEMA E NELLA REALTÀ",
+      text: "Il cinema e la televisione hanno spesso la tendenza a romanizzare la realtà... Nella maggior parte dei film e delle serie tv, il mondo mafioso viene rappresentato come un mondo legato alle tradizioni, all'ordine, all'onore... La realtà invece, è molto diversa. La mafia è un'organizzazione criminale fortemente gerarchica e che usa la violenza per imporsi sulla società...",
+      trans: "电影和电视往往倾向于美化现实……在大多数电影和电视剧中，黑手党被描绘成一个与传统、秩序、荣誉相关的世界……然而现实却大不相同。黑手党是一个层级森严的犯罪组织，使用暴力支配社会……",
+      vocab: [
+        {it: "mafia", cn: "黑手党"},
+        {it: "organizzazione criminale", cn: "犯罪组织"},
+        {it: "estorsione", cn: "敲诈勒索"},
+        {it: "omicidio", cn: "谋杀"},
+        {it: "contrastare", cn: "对抗，抵制"}
+      ]
+    }
+  ],
+
+  // Personaggi
+  personaggi: [
+    {
+      name: "Leonardo da Vinci (1452-1519)",
+      desc: "Uno dei personaggi italiani più famosi al mondo: non è stato solo un grande pittore, ma anche scrittore, scenografo, architetto, scienziato, un precursore dei tempi.",
+      cn: "列奥纳多·达·芬奇：意大利乃至全世界最著名的人物之一，他不仅是一位伟大的画家，还是作家、舞台设计师、建筑师、科学家，一位时代的先驱。"
+    },
+    {
+      name: "Galileo Galilei (1564-1642)",
+      desc: "Fondatore del metodo scientifico sperimentale. Ha scoperto i satelliti di Giove e le macchie solari. Sosteneva la teoria di Copernico.",
+      cn: "伽利略·伽利雷：实验科学方法的创始人。发现了木星的卫星和太阳黑子。支持哥白尼的日心说。",
+      inventions: ["termoscopio (测温器)", "compasso (圆规)", "microscopio (显微镜)", "perfezionamento del telescopio (望远镜改进)"]
+    },
+    {
+      name: "Alessandro Volta (1745-1827)",
+      desc: "Dal suo nome deriva il Volt. È conosciuto per l'invenzione della batteria elettrica nel 1800, che ha dato inizio all'uso pratico dell'elettricità.",
+      cn: "亚历山德罗·伏打：电压单位伏特(Volt)就是以他的名字命名的。1800年发明了电池，开启了电力的实际应用。"
+    },
+    {
+      name: "Antonio Meucci (1808-1889)",
+      desc: "Nel 1863 ha costruito un apparecchio telefonico. Nel 2002 il Congresso americano ha riconosciuto Meucci come l'inventore del telefono.",
+      cn: "安东尼奥·梅乌奇：1863年制造了电话装置。2002年美国国会终于承认梅乌奇是电话的发明者。"
+    },
+    {
+      name: "Guglielmo Marconi (1874-1937)",
+      desc: "Primo a intuire la possibilità di utilizzare le onde elettromagnetiche per trasmettere messaggi a distanza. Ha ottenuto il premio Nobel per la Fisica nel 1909. Considerato il 'padre' delle telecomunicazioni.",
+      cn: "古列尔莫·马可尼：第一个意识到可以利用电磁波进行远距离信息传输的人。1909年获得诺贝尔物理学奖。被公认为'电信之父'。"
+    },
+    {
+      name: "Altri Nobel italiani",
+      desc: "Enrico Fermi (Fisica 1938, radioattività artificiale), Giulio Natta (Chimica 1963, Moplen plastica), Rita Levi-Montalcini (Medicina 1986, sistema nervoso)",
+      cn: "其他诺贝尔奖得主：恩里科·费米（1938年物理学奖，人工放射性）、朱利奥·纳塔（1963年化学奖，莫普伦塑料）、丽塔·列维-蒙塔尔奇尼（1986年医学奖，神经系统研究）"
+    }
+  ],
+
+  // Dati statistici
+  dati: {
+    title: "Consumo di sostanze stupefacenti in Italia",
+    population: "60,6 milioni (15-64 anni)",
+    consumatori: [
+      { name: "Cannabis", value: "6,1 milioni", pct: 29 },
+      { name: "Cocaina", value: "1,1 milioni", pct: 43 },
+      { name: "Eroina", value: "220 mila", pct: 16 },
+      { name: "Altre", value: "591 mila", pct: 12 }
+    ],
+    studenti: "25,6% (660.000) degli studenti ha consumato almeno una sostanza illegale",
+    trattamento: "133.060 persone in trattamento (85,8% uomini, 14,2% donne)"
+  }
+};
+
+// ====== RENDER FUNCTIONS ======
+
+function renderDialoghi() {
+  const body = document.getElementById('dialoghiBody');
+  body.innerHTML = '';
+  DATA.dialoghi.forEach((dialog, idx) => {
+    const div = document.createElement('div');
+    div.className = 'dialog-item';
+    div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+      <h4 style="font-family:'Playfair Display',serif;font-size:1.05rem;flex:1;">${dialog.title}</h4>
+      <button class="play-all-btn action-btn" onclick="pad(${idx}, this)">🔊 朗读全部</button>
+      <button class="action-btn" onclick="toggleOrigBlock(this)">原文</button>
+    </div>
+    <div class="dialog-lines" id="dialog-${idx}">`;
+    dialog.lines.forEach((line, li) => {
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'dialog-line-wrap';
+      lineDiv.style.marginBottom = '10px';
+      lineDiv.style.padding = '6px 10px';
+      lineDiv.style.borderRadius = '6px';
+      lineDiv.style.background = li % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)';
+      lineDiv.innerHTML = `
+        <div class="dialog-speaker">${line.speaker}</div>
+        <div class="dialog-text" data-orig="${line.text}">${line.text}</div>
+        <div class="audio-bar">
+          <button class="play-btn" onclick="pl('${idx}-${li}', this)">▶</button>
+          <div class="speed-btn-group">
+            <button class="speed-btn" onclick="ss(this,0.7)">0.7×</button>
+            <button class="speed-btn active" onclick="ss(this,1.0)">1.0×</button>
+            <button class="speed-btn" onclick="ss(this,1.3)">1.3×</button>
+          </div>
+          <button class="action-btn" onclick="toggleTrans(this)">译文 ▸</button>
+          <button class="action-btn" onclick="toggleOrigLine(this)">原文</button>
+        </div>
+        <div class="trans-box">${line.trans}</div>
+      `;
+      div.querySelector('.dialog-lines').appendChild(lineDiv);
+    });
+    // Vocab + grammar
+    if (dialog.vocab || dialog.grammar) {
+      const extraDiv = document.createElement('div');
+      extraDiv.style.marginTop = '14px';
+      if (dialog.vocab) {
+        let vHtml = '<p style="font-size:0.82rem;font-weight:600;color:var(--ita-green);margin-bottom:6px;">📖 核心词汇</p><table class="vocab-table"><tr><th>意大利语</th><th>词性</th><th>中文释义</th></tr>';
+        dialog.vocab.forEach(v => { vHtml += `<tr><td class="italian-word">${v.it}</td><td>${v.pos||'—'}</td><td>${v.cn}</td></tr>`; });
+        vHtml += '</table>';
+        extraDiv.innerHTML += vHtml;
+      }
+      if (dialog.grammar) {
+        dialog.grammar.forEach(g => {
+          extraDiv.innerHTML += `<div class="grammar-note"><div class="label">📝 ${g.title}</div>${g.content}</div>`;
+        });
+      }
+      div.appendChild(extraDiv);
+    }
+    body.appendChild(div);
+  });
+}
+
+function renderEspressioni() {
+  const body = document.getElementById('espressioniBody');
+  body.innerHTML = '';
+  let espIdx = 0;
+  DATA.espressioni.forEach(exp => {
+    const g = document.createElement('div');
+    g.className = 'exp-group';
+    g.innerHTML = `<h4>${exp.group}</h4>`;
+    exp.items.forEach(item => {
+      const key = `esp_${espIdx}`;
+      g.innerHTML += `<span class="exp-item" onclick="p1x('${key}')">${item}</span>`;
+      espIdx++;
+    });
+    body.appendChild(g);
+  });
+  body.innerHTML += `<p style="margin-top:12px;font-size:0.82rem;color:var(--text-muted);">💡 点击表达可听到朗读</p>`;
+}
+
+function renderProverbi() {
+  const body = document.getElementById('proverbiBody');
+  body.innerHTML = '';
+  DATA.proverbi.forEach((p, i) => {
+    body.innerHTML += `<div class="proverb-card">
+      <span class="num">${i+1}</span>
+      <div>
+        <div class="it"><button class="play-btn" style="width:28px;height:28px;font-size:0.7rem;display:inline-flex;margin-right:8px;vertical-align:middle;" onclick="p1x('proverbio_${i}')">▶</button>${p.it}</div>
+        <div class="cn">${p.cn}</div>
+      </div>
+    </div>`;
+  });
+}
+
+function renderEsercizi() {
+  const body = document.getElementById('eserciziBody');
+  body.innerHTML = `<p style="margin-bottom:14px;font-size:0.9rem;color:var(--text-secondary);">阅读下列问句，用意大利语作答：</p>`;
+  DATA.esercizi.forEach((ex, i) => {
+    body.innerHTML += `<div class="exercise-item">
+      <div class="q">
+        ${ex.priority ? '⭐ ' : ''}${ex.num}. ${ex.text}
+        <span style="margin-left:8px;">
+          <button class="action-btn" onclick="p1x('esercizio_${i}')">🔊</button>
+          <button class="action-btn" onclick="showAnswer(this)">💡 参考答案</button>
+        </span>
+      </div>
+      <div class="ans-box" data-ans="${ex.text}">${ex.answer || '试着用完整的意大利语句子回答。注意使用正确的疑问词和动词变位。'}</div>
+    </div>`;
+  });
+}
+
+function renderCultura() {
+  const body = document.getElementById('culturaBody');
+  body.innerHTML = '';
+  DATA.cultura.forEach((c, ci) => {
+    const div = document.createElement('div');
+    div.className = 'dialog-item';
+    div.innerHTML = `<h4 style="font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:8px;">${c.title}</h4>
+    <div class="orig-text p-text" style="font-family:'Times New Roman',serif;line-height:1.8;white-space:pre-wrap;">${c.text}</div>
+    <div class="audio-bar">
+      <button class="play-btn" onclick="pab('cultura_${ci}', this)">▶</button>
+      <div class="speed-btn-group">
+        <button class="speed-btn" onclick="ss(this,0.7)">0.7×</button>
+        <button class="speed-btn active" onclick="ss(this,1.0)">1.0×</button>
+        <button class="speed-btn" onclick="ss(this,1.3)">1.3×</button>
+      </div>
+      <button class="action-btn" onclick="toggleTrans(this)">译文 ▸</button>
+      <button class="action-btn" onclick="toggleOrigBlock(this)">原文</button>
+    </div>
+    <div class="trans-box">${c.trans}</div>`;
+    if (c.vocab) {
+      let vHtml = '<table class="vocab-table" style="margin-top:10px;"><tr><th>词汇</th><th>释义</th></tr>';
+      c.vocab.forEach(v => { vHtml += `<tr><td class="italian-word">${v.it}</td><td>${v.cn}</td></tr>`; });
+      vHtml += '</table>';
+      div.innerHTML += vHtml;
+    }
+    body.appendChild(div);
+  });
+}
+
+function renderStoria() {
+  const body = document.getElementById('storiaBody');
+  body.innerHTML = '';
+  DATA.storia.forEach((s, si) => {
+    const div = document.createElement('div');
+    div.className = 'dialog-item';
+    div.innerHTML = `<h4 style="font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:8px;">${s.title}</h4>
+    <div class="p-text" style="font-family:'Times New Roman',serif;line-height:1.8;white-space:pre-wrap;">${s.text}</div>
+    <div class="audio-bar">
+      <button class="play-btn" onclick="pab('storia_${si}', this)">▶</button>
+      <div class="speed-btn-group">
+        <button class="speed-btn" onclick="ss(this,0.7)">0.7×</button>
+        <button class="speed-btn active" onclick="ss(this,1.0)">1.0×</button>
+        <button class="speed-btn" onclick="ss(this,1.3)">1.3×</button>
+      </div>
+      <button class="action-btn" onclick="toggleTrans(this)">译文 ▸</button>
+      <button class="action-btn" onclick="toggleOrigBlock(this)">原文</button>
+    </div>
+    <div class="trans-box">${s.trans}</div>`;
+    if (s.vocab) {
+      let vHtml = '<table class="vocab-table" style="margin-top:10px;"><tr><th>词汇</th><th>释义</th></tr>';
+      s.vocab.forEach(v => { vHtml += `<tr><td class="italian-word">${v.it}</td><td>${v.cn}</td></tr>`; });
+      vHtml += '</table>';
+      div.innerHTML += vHtml;
+    }
+    body.appendChild(div);
+  });
+}
+
+function renderPersonaggi() {
+  const body = document.getElementById('personaggiBody');
+  body.innerHTML = '';
+  DATA.personaggi.forEach((p, pi) => {
+    const div = document.createElement('div');
+    div.className = 'dialog-item';
+    div.innerHTML = `<h4 style="font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:6px;color:var(--ita-green);">🧑‍🔬 ${p.name}</h4>
+    <div class="p-text" style="font-family:'Times New Roman',serif;line-height:1.7;margin-bottom:8px;">${p.desc}</div>
+    <div class="audio-bar">
+      <button class="play-btn" onclick="pab('personaggio_${pi}', this)">▶</button>
+      <div class="speed-btn-group">
+        <button class="speed-btn" onclick="ss(this,0.7)">0.7×</button>
+        <button class="speed-btn active" onclick="ss(this,1.0)">1.0×</button>
+        <button class="speed-btn" onclick="ss(this,1.3)">1.3×</button>
+      </div>
+      <button class="action-btn" onclick="toggleOrigBlock(this)">原文</button>
+    </div>
+    <div class="trans-box show" style="background:#F0F7FF;border-left-color:#3B82F6;">${p.cn}</div>`;
+    if (p.inventions) {
+      div.innerHTML += `<div style="margin-top:8px;font-size:0.85rem;"><span style="font-weight:600;">发明/贡献：</span>${p.inventions.join(' · ')}</div>`;
+    }
+    body.appendChild(div);
+  });
+}
+
+function renderDati() {
+  const body = document.getElementById('datiBody');
+  const d = DATA.dati;
+  let html = `<p style="margin-bottom:10px;font-size:0.9rem;"><strong>${d.title}</strong><br><span style="color:var(--text-muted);font-size:0.82rem;">参考人口：${d.population}</span></p>
+  <div class="data-chart">`;
+  d.consumatori.forEach(c => {
+    html += `<div class="data-bar">
+      <div class="label-sm">${c.name}</div>
+      <div class="value">${c.value}</div>
+      <div class="pct-bar"><div class="pct-fill" style="width:0%" data-pct="${c.pct}"></div></div>
+    </div>`;
+  });
+  html += `</div>
+  <div style="background:var(--bg-card-alt);padding:12px 16px;border-radius:8px;margin-top:10px;">
+    <p style="font-size:0.85rem;"><strong>📊 学生消费数据：</strong>${d.studenti}</p>
+    <p style="font-size:0.85rem;margin-top:6px;"><strong>🏥 治疗人数：</strong>${d.trattamento}</p>
+  </div>`;
+  body.innerHTML = html;
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.pct-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 300);
+}
+
+// ====== INTERACTIVE FEATURES ======
+
+// Audio - base64 playback
+
+
+
+
+// Toggle translation
+function toggleTrans(btn) {
+  const box = btn.closest('.dialog-line-wrap, .dialog-item')?.querySelector('.trans-box');
+  if (!box) return;
+  box.classList.toggle('show');
+  btn.textContent = box.classList.contains('show') ? '译文 ▾' : '译文 ▸';
+}
+
+// Toggle original text visibility
+function toggleOrigBlock(btn) {
+  const wrap = btn.closest('.dialog-item');
+  wrap.classList.toggle('orig-hidden');
+  btn.classList.toggle('active-btn');
+}
+function toggleOrigLine(btn) {
+  const wrap = btn.closest('.dialog-line-wrap');
+  wrap.classList.toggle('line-orig-hidden');
+  btn.classList.toggle('active-btn');
+}
+
+function showAnswer(btn) {
+  const box = btn.closest('.exercise-item').querySelector('.ans-box');
+  box.classList.toggle('show');
+  btn.textContent = box.classList.contains('show') ? '🙈 隐藏' : '💡 参考答案';
+}
+
+// Section toggle
+function toggleSection(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// Tab switching
+// 全局错误捕获，避免白屏
+window.addEventListener('error', function(e) {
+  console.error('页面错误:', e.message);
+  document.getElementById('loadingScreen').innerHTML = '<p style="color:#CE2B37;">⚠️ 页面加载遇到问题，请刷新重试</p><p style="font-size:0.8rem;color:#888;">' + e.message + '</p>';
+  document.getElementById('loadingScreen').classList.remove('hidden');
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    // 加载音频映射
+    (async function() {
+      try {
+        const [wResp, pResp] = await Promise.all([
+          fetch('audio/w_map.json'),
+          fetch('audio/p_map.json')
+        ]);
+        AUDIO_MAP.word = await wResp.json();
+        AUDIO_MAP.para = (await pResp.json()).paragraphs;
+        // 后台预加载
+        setTimeout(preloadAudio, 200);
+      } catch(e) {
+        console.warn('Audio maps not loaded, fallback to system TTS:', e.message);
+      }
+    })();
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Render all content
+  renderDialoghi();
+  renderEspressioni();
+  renderProverbi();
+  renderEsercizi();
+  renderCultura();
+  renderStoria();
+  renderPersonaggi();
+  renderDati();
+
+  // Hide loading
+  document.getElementById('loadingScreen').classList.add('hidden');
+
+  // Scroll to top button
+  window.addEventListener('scroll', function() {
+    document.getElementById('scrollTop').classList.toggle('show', window.scrollY > 400);
+  });
+  } catch(e) {
+    console.error('初始化错误:', e);
+    document.getElementById('loadingScreen').innerHTML = '<p style="color:#CE2B37;">⚠️ 页面初始化失败</p><p style="font-size:0.8rem;color:#888;">' + e.message + '</p>';
+  }
+});
+</script>
+</body>
+</html>
