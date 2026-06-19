@@ -1584,8 +1584,12 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('loadingScreen').classList.add('hidden');
         }, 500);
       } catch(e) {
-        document.querySelector('#loadingScreen p').textContent = '⚠️ 请用本地服务器打开此页面才能播放音频';
-        console.warn('Audio load failed:', e.message);
+        document.querySelector('#loadingScreen p').textContent = '⚠️ 用本地服务器打开才能播放音频（双击 启动本地服务器.bat）';
+      console.warn('Audio load failed:', e.message);
+      // 即使音频加载失败，也隐藏loading显示内容
+      setTimeout(function(){
+        document.getElementById('loadingScreen').classList.add('hidden');
+      }, 1000);
       }
     })();
   const tabs = document.querySelectorAll('.tab-btn');
