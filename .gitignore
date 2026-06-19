@@ -1,6 +1,5 @@
-# 音频源文件（已内联到 audio_data.js）
-audio/
-*.mp3
+# 音频源文件
+audio_data.js
 
 # 生成脚本（一次性使用）
 generate_audio.py

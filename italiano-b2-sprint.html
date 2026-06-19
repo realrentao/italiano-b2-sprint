@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>意大利语B2冲刺 · 交互学习工具</title>
-<script src="audio_data.js"></script>
-<script src="audio_data.js"></script>
 <!-- Google Fonts (如在境内无法加载则降级到系统字体) -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet" onerror="this.remove()">
 <style>
@@ -762,16 +760,30 @@ body {
 </footer>
 
 <script>
-// ====== INLINE AUDIO (311 files) ======
-
-let _ca=null,_cb=null,_ps=0,_sp=1.0;
+// ====== AUDIO SYSTEM (独立base64 JSON文件) ======
+let _ca=null,_cb=null,_ps=0,_sp=1.0,_am={p:{},w:{}},_ac={};
 function ss(b,s){_sp=s;if(_ca){_ca.playbackRate=s;}var g=b.closest('.speed-btn-group');if(g)g.querySelectorAll('.speed-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');}
 function btnReset(b){if(b){b.classList.remove('playing');b.textContent='▶';}}
 function sa(){_ps++;if(_ca){var ob=_ca._btn;btnReset(ob);_ca.pause();_ca=null}if(_cb){_cb=null}}
 function pb(k,b){
   if(b&&b===_cb){sa();return;}
-  sa();var s=++_ps,d=AI[k];if(!d)return;
+  sa();var s=++_ps;
   if(b){b.classList.add('playing');b.textContent='⏹';_cb=b}
+  // 从缓存取或异步加载
+  _doPlay(k,b,s);
+}
+async function _doPlay(k,b,s){
+  var d=_ac[k]||null;
+  if(!d){
+    var f=_am.p[k]||_am.w[k];
+    if(!f){btnReset(b);_cb=null;return}
+    try{
+      var r=await fetch(f);
+      if(!r.ok)throw Error('HTTP '+r.status);
+      d=(await r.json()).b64;_ac[k]=d;
+    }catch(e){btnReset(b);_cb=null;console.warn('音频加载失败:',k,e.message);return}
+  }
+  if(s!==_ps){return}
   try{
     var a=atob(d),u=new Uint8Array(a.length);
     for(var i=0;i<a.length;i++)u[i]=a.charCodeAt(i);
@@ -1520,19 +1532,20 @@ window.addEventListener('error', function(e) {
 
 document.addEventListener('DOMContentLoaded', function() {
   try {
-    // 加载音频映射
+    // 加载音频映射文件（独立base64 JSON）
     (async function() {
       try {
         const [wResp, pResp] = await Promise.all([
           fetch('audio/w_map.json'),
           fetch('audio/p_map.json')
         ]);
-        AUDIO_MAP.word = await wResp.json();
-        AUDIO_MAP.para = (await pResp.json()).paragraphs;
-        // 后台预加载
-        setTimeout(preloadAudio, 200);
+        _am.w = await wResp.json();
+        var pj = await pResp.json();
+        _am.p = pj.paragraphs || pj;
+        document.getElementById('loadingScreen').querySelector('p').textContent = '音频映射加载完成，点击播放即可收听';
       } catch(e) {
-        console.warn('Audio maps not loaded, fallback to system TTS:', e.message);
+        document.getElementById('loadingScreen').querySelector('p').textContent = '⚠️ 请用本地服务器打开此页面才能播放音频（见说明）';
+        console.warn('Audio maps load failed:', e.message);
       }
     })();
   const tabs = document.querySelectorAll('.tab-btn');
